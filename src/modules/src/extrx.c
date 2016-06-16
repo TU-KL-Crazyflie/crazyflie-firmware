@@ -42,9 +42,13 @@
 #include "debug.h"
 #include "log.h"
 
-#define ENABLE_CPPM
+// #define ENABLE_CPPM
+#define ENABLE_SBUS
+#define SBUS_Endbyte	0x00
+#define SBUS_Startbyte	0x0F
 #define ENABLE_EXTRX_LOG
 
+#define SBUS_Baudrate 100000
 
 #define EXTRX_NR_CHANNELS  8
 
@@ -63,13 +67,29 @@
 
 static struct CommanderCrtpValues commanderPacket;
 static uint16_t ch[EXTRX_NR_CHANNELS];
+static uint8_t	SBUS_Byte[24];		// 25 Datenbytes
+static uint8_t	SBUS_Byteindex;
+static uint8_t	SBUS_lost_Frames;
+static uint16_t	SBUS_Channel[16];
+
+extern  xQueueHandle uart3queue;  // Introduce queueHandler from uart3.c
+
+struct {
+	unsigned Endbyte_received:1;
+	unsigned SBUS_synced:1;
+	unsigned SBUS_Channel_17:1;
+	unsigned SBUS_Channel_16:1;
+	unsigned Frame_valid:1;
+	unsigned Failsave_activated:1;
+	unsigned New_Frame_received:1;
+} SBUS_Flags;
 
 static void extRxTask(void *param);
 static void extRxDecodeCppm(void);
 static void extRxDecodeChannels(void);
+static void extRxReceiveSBusFrame(void);
+static void extRxDecodeSBusChannels(void);
 
-void extRxInit(void)
-{
 
 #ifdef ENABLE_CPPM
   cppmInit();
@@ -79,9 +99,13 @@ void extRxInit(void)
   uart1Init();
 #endif
 
+#ifdef EBNABLE_SBUS
+  uart3init(SBUS_Baudrate);
+#endif
 
-  xTaskCreate(extRxTask, EXTRX_TASK_NAME,
-              EXTRX_TASK_STACKSIZE, NULL, EXTRX_TASK_PRI, NULL);
+void extRxInit(void)
+{
+  xTaskCreate(extRxTask, EXTRX_TASK_NAME, EXTRX_TASK_STACKSIZE, NULL, EXTRX_TASK_PRI, NULL);
 }
 
 static void extRxTask(void *param)
@@ -92,9 +116,86 @@ static void extRxTask(void *param)
 
   while (true)
   {
-    extRxDecodeCppm();
+		#ifdef ENABLE_SBUS
+		extRxReceiveSBusFrame();
+		if(SBUS_Flags.New_Frame_received==1){
+				extRxDecodeSBusChannels();
+		}
+		#endif
+		extRxDecodeCppm();
   }
 }
+
+static void extRxReceiveSBusFrame(void){
+	char byte;
+	while(xQueueReceive(uart3queue, &byte, 0)){ // read until queue empty, terminate immediately afterwards (no timeout)
+		// Prüfe Synchronisierung
+		if(SBUS_Flags.SBUS_synced){
+			//Lese Frame
+			if (SBUS_Byteindex<24){
+				SBUS_Byte[SBUS_Byteindex++]=byte;
+			}
+			else if (byte == SBUS_Endbyte || SBUS_Byteindex==24)   {
+				SBUS_Flags.New_Frame_received=1;
+				SBUS_Byteindex=0;
+			}
+			else {
+				SBUS_Flags.SBUS_synced=0;// Synchronisierung verloren
+				SBUS_lost_Frames++;
+			}
+		}
+		else {
+			// Synchronisiere
+			if(byte==SBUS_Endbyte){
+				SBUS_Flags.Endbyte_received=1;
+			}
+			else if (byte==SBUS_Startbyte && SBUS_Flags.Endbyte_received){
+				SBUS_Flags.SBUS_synced=1;
+				SBUS_Flags.Endbyte_received=0;
+				SBUS_Byteindex=1;
+				SBUS_Byte[0]=SBUS_Startbyte;
+			}
+		}
+	}
+
+}
+
+static void extRxDecodeSBusChannels(void){
+	if (SBUS_Byte[0]!=SBUS_Startbyte ){
+		SBUS_Flags.Frame_valid=0;
+		SBUS_Flags.SBUS_synced=0;
+		return;
+	}
+	else{
+		SBUS_Channel[0]	 = ((SBUS_Byte[1]	 | (SBUS_Byte[2]<<8)) & 0x7FF ) ;
+		commanderPacket.thrust = SBUS_Channel[0]* (0xFFFF/2047);
+		SBUS_Channel[1]  = ((SBUS_Byte[2]>>3 |SBUS_Byte[3]<<5)                 & 0x07FF);
+		commanderPacket.roll = SBUS_Channel[1]* (0xFFFF/2047);
+		SBUS_Channel[2]  = ((SBUS_Byte[3]>>6 |SBUS_Byte[4]<<2 |SBUS_Byte[5]<<10)  & 0x07FF)	;
+		commanderPacket.pitch = SBUS_Channel[2]* (0xFFFF/2047);
+		SBUS_Channel[3]  = ((SBUS_Byte[5]>>1 |SBUS_Byte[6]<<7)                 & 0x07FF);
+		commanderPacket.yaw = SBUS_Channel[3]* (0xFFFF/2047);
+		/* SBUS_Channel[4]  = ((SBUS_Byte[6]>>4 |SBUS_Byte[7]<<4)                 & 0x07FF);
+		SBUS_Channel[5]  = ((SBUS_Byte[7]>>7 |SBUS_Byte[8]<<1 |SBUS_Byte[9]<<9)   & 0x07FF);
+		SBUS_Channel[6]  = ((SBUS_Byte[9]>>2 |SBUS_Byte[10]<<6)                & 0x07FF);
+		SBUS_Channel[7]  = ((SBUS_Byte[10]>>5|SBUS_Byte[11]<<3)                & 0x07FF);
+		SBUS_Channel[8]  = ((SBUS_Byte[12]   |SBUS_Byte[13]<<8)                & 0x07FF);
+		SBUS_Channel[9]  = ((SBUS_Byte[13]>>3|SBUS_Byte[14]<<5)                & 0x07FF);
+		SBUS_Channel[10] = ((SBUS_Byte[14]>>6|SBUS_Byte[15]<<2|SBUS_Byte[16]<<10) & 0x07FF);
+		SBUS_Channel[11] = ((SBUS_Byte[16]>>1|SBUS_Byte[17]<<7)                & 0x07FF);
+		SBUS_Channel[12] = ((SBUS_Byte[17]>>4|SBUS_Byte[18]<<4)                & 0x07FF);
+		SBUS_Channel[13] = ((SBUS_Byte[18]>>7|SBUS_Byte[19]<<1|SBUS_Byte[20]<<9)  & 0x07FF);
+		SBUS_Channel[14] = ((SBUS_Byte[20]>>2|SBUS_Byte[21]<<6)                & 0x07FF);
+		SBUS_Channel[15] = ((SBUS_Byte[21]>>5|SBUS_Byte[22]<<3)                & 0x07FF);
+		SBUS_Flags.SBUS_Channel_16 = (SBUS_Byte[23] & 0b1000000 );		// Bit 7
+		SBUS_Flags.SBUS_Channel_17 = (SBUS_Byte[23] & 0b01000000 );		// Bit 6	*/
+		SBUS_lost_Frames = SBUS_lost_Frames + (SBUS_Byte[23] & 0b00100000 );		// Funktioniert so nicht!!!
+		SBUS_Flags.Failsave_activated = (SBUS_Byte[23] & 0b00010000 );
+		SBUS_Flags.Frame_valid = 1;
+		commanderExtrxSet(&commanderPacket);
+	}
+}
+
 
 static void extRxDecodeChannels(void)
 {
@@ -173,10 +274,16 @@ static void extRxDecodeSpektrum(void)
 /* Loggable variables */
 #ifdef ENABLE_EXTRX_LOG
 LOG_GROUP_START(extrx)
+/*
 LOG_ADD(LOG_UINT16, ch0, &ch[0])
 LOG_ADD(LOG_UINT16, ch1, &ch[1])
 LOG_ADD(LOG_UINT16, ch2, &ch[2])
 LOG_ADD(LOG_UINT16, ch3, &ch[3])
+*/
+LOG_ADD(LOG_UINT16, ch0, &SBUS_Channel[0])
+LOG_ADD(LOG_UINT16, ch1, &SBUS_Channel[1])
+LOG_ADD(LOG_UINT16, ch3, &SBUS_Channel[2])
+LOG_ADD(LOG_UINT16, ch4, &SBUS_Channel[3])
 LOG_ADD(LOG_UINT16, thrust, &commanderPacket.thrust)
 LOG_ADD(LOG_FLOAT, roll, &commanderPacket.roll)
 LOG_ADD(LOG_FLOAT, pitch, &commanderPacket.pitch)
