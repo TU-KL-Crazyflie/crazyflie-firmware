@@ -121,6 +121,7 @@ static void extRxTask(void *param)
 		extRxReceiveSBusFrame();
 		if(SBUS_Flags.New_Frame_received==1){
 				extRxDecodeSBusChannels();
+				SBUS_Flags.New_Frame_received=0;
 		}
 		#endif
 		// extRxDecodeCppm();
@@ -129,7 +130,6 @@ static void extRxTask(void *param)
 
 static void extRxReceiveSBusFrame(void){
 	char byte;
-	bool test=xQueueReceive(uart3queue, &byte, portMAX_DELAY);
 	while(xQueueReceive(uart3queue, &byte, portMAX_DELAY)){ // read until queue empty, terminate immediately afterwards (no timeout)
 		// Prüfe Synchronisierung
 		if(SBUS_Flags.SBUS_synced){
@@ -195,6 +195,7 @@ static void extRxDecodeSBusChannels(void){
 		SBUS_lost_Frames = SBUS_lost_Frames + (SBUS_Byte[23] & 0b00100000 );		// Funktioniert so nicht!!! oder vll doch?
 		SBUS_Flags.Failsave_activated = (SBUS_Byte[23] & 0b00010000 );
 		SBUS_Flags.Frame_valid = 1;
+
 		commanderExtrxSet(&commanderPacket);
 	}
 }

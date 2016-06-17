@@ -162,6 +162,7 @@ static void commanderCacheSelectorUpdate(void)
     activeCache = &crtpCache;
     commanderDropToGround();
   }
+ // activeCache = &extrxCache;
 }
 
 static void commanderCrtpCB(CRTPPacket* pk)
