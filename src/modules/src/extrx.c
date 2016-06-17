@@ -36,6 +36,7 @@
 #include "nvicconf.h"
 #include "commander.h"
 #include "uart1.h"
+#include "uart3.h"
 #include "cppm.h"
 
 #define DEBUG_MODULE  "EXTRX"
@@ -90,7 +91,8 @@ static void extRxDecodeChannels(void);
 static void extRxReceiveSBusFrame(void);
 static void extRxDecodeSBusChannels(void);
 
-
+void extRxInit(void)
+{
 #ifdef ENABLE_CPPM
   cppmInit();
 #endif
@@ -99,12 +101,11 @@ static void extRxDecodeSBusChannels(void);
   uart1Init();
 #endif
 
-#ifdef EBNABLE_SBUS
-  uart3init(SBUS_Baudrate);
+#ifdef ENABLE_SBUS
+  uart3Init(SBUS_Baudrate);
 #endif
 
-void extRxInit(void)
-{
+
   xTaskCreate(extRxTask, EXTRX_TASK_NAME, EXTRX_TASK_STACKSIZE, NULL, EXTRX_TASK_PRI, NULL);
 }
 
@@ -112,7 +113,7 @@ static void extRxTask(void *param)
 {
 
   //Wait for the system to be fully started
-  systemWaitStart();
+  //systemWaitStart();
 
   while (true)
   {
@@ -122,13 +123,14 @@ static void extRxTask(void *param)
 				extRxDecodeSBusChannels();
 		}
 		#endif
-		extRxDecodeCppm();
+		// extRxDecodeCppm();
   }
 }
 
 static void extRxReceiveSBusFrame(void){
 	char byte;
-	while(xQueueReceive(uart3queue, &byte, 0)){ // read until queue empty, terminate immediately afterwards (no timeout)
+	bool test=xQueueReceive(uart3queue, &byte, portMAX_DELAY);
+	while(xQueueReceive(uart3queue, &byte, portMAX_DELAY)){ // read until queue empty, terminate immediately afterwards (no timeout)
 		// Prüfe Synchronisierung
 		if(SBUS_Flags.SBUS_synced){
 			//Lese Frame
@@ -138,6 +140,7 @@ static void extRxReceiveSBusFrame(void){
 			else if (byte == SBUS_Endbyte || SBUS_Byteindex==24)   {
 				SBUS_Flags.New_Frame_received=1;
 				SBUS_Byteindex=0;
+				return;
 			}
 			else {
 				SBUS_Flags.SBUS_synced=0;// Synchronisierung verloren
@@ -189,7 +192,7 @@ static void extRxDecodeSBusChannels(void){
 		SBUS_Channel[15] = ((SBUS_Byte[21]>>5|SBUS_Byte[22]<<3)                & 0x07FF);
 		SBUS_Flags.SBUS_Channel_16 = (SBUS_Byte[23] & 0b1000000 );		// Bit 7
 		SBUS_Flags.SBUS_Channel_17 = (SBUS_Byte[23] & 0b01000000 );		// Bit 6	*/
-		SBUS_lost_Frames = SBUS_lost_Frames + (SBUS_Byte[23] & 0b00100000 );		// Funktioniert so nicht!!!
+		SBUS_lost_Frames = SBUS_lost_Frames + (SBUS_Byte[23] & 0b00100000 );		// Funktioniert so nicht!!! oder vll doch?
 		SBUS_Flags.Failsave_activated = (SBUS_Byte[23] & 0b00010000 );
 		SBUS_Flags.Frame_valid = 1;
 		commanderExtrxSet(&commanderPacket);
