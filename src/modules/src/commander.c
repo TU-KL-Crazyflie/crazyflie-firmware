@@ -276,9 +276,10 @@ void commanderExtrxSet(const struct CommanderCrtpValues *val)
   extrxCache.activeSide = !extrxCache.activeSide;
   extrxCache.timestamp = xTaskGetTickCount();
 
-  if (extrxCache.targetVal[extrxCache.activeSide].thrust == 0) {
+  //if (extrxCache.targetVal[extrxCache.activeSide].thrust == 0) {
     thrustLocked = false;
-  }
+  //}
+
 }
 
 uint32_t commanderGetInactivityTime(void)

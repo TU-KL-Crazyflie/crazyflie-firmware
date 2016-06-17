@@ -93,7 +93,7 @@ static void stabilizerTask(void* param)
   vTaskSetApplicationTaskTag(0, (void*)TASK_STABILIZER_ID_NBR);
 
   //Wait for the system to be fully started to start stabilization loop
-  systemWaitStart();
+ // systemWaitStart();														############### debug änderung
 
   // Wait for sensors to be calibrated
   lastWakeTime = xTaskGetTickCount ();
