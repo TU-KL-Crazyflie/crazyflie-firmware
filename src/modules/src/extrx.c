@@ -49,9 +49,14 @@
 #define SBUS_Startbyte	0x0F
 #define ENABLE_EXTRX_LOG
 
-#define SBUS_Baudrate 100000
+#define SBUS_Baudrate 			100000
+#define SBUS_Channel_Min		172
+#define SBUS_mid_ch1			992
+#define SBUS_mid_ch2			992
+#define SBUS_mid_ch3			990
+#define SBUS_Channel_Deadband	5
 
-#define EXTRX_NR_CHANNELS  8
+#define EXTRX_NR_CHANNELS  		8
 
 #define EXTRX_CH_TRUST     2
 #define EXTRX_CH_ROLL      0
@@ -62,9 +67,9 @@
 #define EXTRX_SIGN_PITCH   (-1)
 #define EXTRX_SIGN_YAW     (-1)
 
-#define EXTRX_SCALE_ROLL   (40.0f)
-#define EXTRX_SCALE_PITCH  (40.0f)
-#define EXTRX_SCALE_YAW    (400.0f)
+#define EXTRX_SCALE_ROLL   (0.1f)
+#define EXTRX_SCALE_PITCH  (0.1f)
+#define EXTRX_SCALE_YAW    (200.0f)
 
 static struct CommanderCrtpValues commanderPacket;
 static uint16_t ch[EXTRX_NR_CHANNELS];
@@ -90,6 +95,7 @@ static void extRxDecodeCppm(void);
 static void extRxDecodeChannels(void);
 static void extRxReceiveSBusFrame(void);
 static void extRxDecodeSBusChannels(void);
+static void scale_SBUS_thrust(void);
 
 void extRxInit(void)
 {
@@ -150,7 +156,7 @@ static void extRxReceiveSBusFrame(void){
 		else {
 			// Synchronisiere
 			if(byte==SBUS_Endbyte){
-				SBUS_Flags.Endbyte_received=1;
+			SBUS_Flags.Endbyte_received=1;
 			}
 			else if (byte==SBUS_Startbyte && SBUS_Flags.Endbyte_received){
 				SBUS_Flags.SBUS_synced=1;
@@ -171,13 +177,14 @@ static void extRxDecodeSBusChannels(void){
 	}
 	else{
 		SBUS_Channel[0]	 = ((SBUS_Byte[1]	 | (SBUS_Byte[2]<<8)) & 0x7FF ) ;
+		scale_SBUS_thrust();
 		commanderPacket.thrust = SBUS_Channel[0]* (0xFFFF/2047);
 		SBUS_Channel[1]  = ((SBUS_Byte[2]>>3 |SBUS_Byte[3]<<5)                 & 0x07FF);
-		commanderPacket.roll = SBUS_Channel[1]* (0xFFFF/2047);
+		commanderPacket.roll = (float)((SBUS_Channel[1]-SBUS_mid_ch1)*EXTRX_SCALE_ROLL);
 		SBUS_Channel[2]  = ((SBUS_Byte[3]>>6 |SBUS_Byte[4]<<2 |SBUS_Byte[5]<<10)  & 0x07FF)	;
-		commanderPacket.pitch = SBUS_Channel[2]* (0xFFFF/2047);
+		commanderPacket.pitch = (float)((SBUS_Channel[2]-SBUS_mid_ch2)*EXTRX_SCALE_PITCH);
 		SBUS_Channel[3]  = ((SBUS_Byte[5]>>1 |SBUS_Byte[6]<<7)                 & 0x07FF);
-		commanderPacket.yaw = SBUS_Channel[3]* (0xFFFF/2047);
+		commanderPacket.yaw = (float)(SBUS_Channel[3]-SBUS_mid_ch3);
 		/* SBUS_Channel[4]  = ((SBUS_Byte[6]>>4 |SBUS_Byte[7]<<4)                 & 0x07FF);
 		SBUS_Channel[5]  = ((SBUS_Byte[7]>>7 |SBUS_Byte[8]<<1 |SBUS_Byte[9]<<9)   & 0x07FF);
 		SBUS_Channel[6]  = ((SBUS_Byte[9]>>2 |SBUS_Byte[10]<<6)                & 0x07FF);
@@ -192,7 +199,7 @@ static void extRxDecodeSBusChannels(void){
 		SBUS_Channel[15] = ((SBUS_Byte[21]>>5|SBUS_Byte[22]<<3)                & 0x07FF);
 		SBUS_Flags.SBUS_Channel_16 = (SBUS_Byte[23] & 0b1000000 );		// Bit 7
 		SBUS_Flags.SBUS_Channel_17 = (SBUS_Byte[23] & 0b01000000 );		// Bit 6	*/
-		SBUS_lost_Frames = SBUS_lost_Frames + (SBUS_Byte[23] & 0b00100000 );		// Funktioniert so nicht!!! oder vll doch?
+		SBUS_lost_Frames = SBUS_lost_Frames + (SBUS_Byte[23] & 0b00100000 );
 		SBUS_Flags.Failsave_activated = (SBUS_Byte[23] & 0b00010000 );
 		SBUS_Flags.Frame_valid = 1;
 
@@ -200,6 +207,11 @@ static void extRxDecodeSBusChannels(void){
 	}
 }
 
+static void scale_SBUS_thrust(void){
+	if(SBUS_Channel[0]<(SBUS_Channel_Min + SBUS_Channel_Deadband)){
+		SBUS_Channel[0]=0;
+	}
+}
 
 static void extRxDecodeChannels(void)
 {
