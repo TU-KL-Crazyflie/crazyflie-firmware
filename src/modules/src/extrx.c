@@ -79,7 +79,7 @@ static uint8_t	SBUS_lost_Frames;
 static uint16_t	SBUS_Channel[16];
 
 extern  xQueueHandle uart3queue;  // Introduce queueHandler from uart3.c
-extern 	altHoldMode;
+extern 	bool altHoldMode;
 
 struct {
 	unsigned Endbyte_received:1;

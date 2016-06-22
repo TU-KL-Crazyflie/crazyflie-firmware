@@ -74,7 +74,7 @@ static CommanderCache* activeCache;
 static uint32_t lastUpdate;
 static bool isInactive;
 static bool thrustLocked;
-static bool altHoldMode = false;
+bool altHoldMode = false;
 static bool posHoldMode = false;
 
 static RPYType stabilizationModeRoll  = ANGLE; // Current stabilization type of roll (rate or angle)
