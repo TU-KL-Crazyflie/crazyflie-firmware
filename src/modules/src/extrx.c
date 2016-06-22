@@ -186,8 +186,9 @@ static void extRxDecodeSBusChannels(void){
 		commanderPacket.pitch = (float)((SBUS_Channel[2]-SBUS_mid_ch2)*EXTRX_SCALE_PITCH);
 		SBUS_Channel[3]  = ((SBUS_Byte[5]>>1 |SBUS_Byte[6]<<7)                 & 0x07FF);
 		commanderPacket.yaw = (float)(SBUS_Channel[3]-SBUS_mid_ch3);
-		/* SBUS_Channel[4]  = ((SBUS_Byte[6]>>4 |SBUS_Byte[7]<<4)                 & 0x07FF);
-		SBUS_Channel[5]  = ((SBUS_Byte[7]>>7 |SBUS_Byte[8]<<1 |SBUS_Byte[9]<<9)   & 0x07FF);
+		SBUS_Channel[4]  = ((SBUS_Byte[6]>>4 |SBUS_Byte[7]<<4)                 & 0x07FF);
+		altHoldMode = SBUS_Channel[4] & (1<<10);									// activate altholdMode
+		/* SBUS_Channel[5]  = ((SBUS_Byte[7]>>7 |SBUS_Byte[8]<<1 |SBUS_Byte[9]<<9)   & 0x07FF);
 		SBUS_Channel[6]  = ((SBUS_Byte[9]>>2 |SBUS_Byte[10]<<6)                & 0x07FF);
 		SBUS_Channel[7]  = ((SBUS_Byte[10]>>5|SBUS_Byte[11]<<3)                & 0x07FF);
 		SBUS_Channel[8]  = ((SBUS_Byte[12]   |SBUS_Byte[13]<<8)                & 0x07FF);
@@ -199,7 +200,7 @@ static void extRxDecodeSBusChannels(void){
 		SBUS_Channel[14] = ((SBUS_Byte[20]>>2|SBUS_Byte[21]<<6)                & 0x07FF);
 		SBUS_Channel[15] = ((SBUS_Byte[21]>>5|SBUS_Byte[22]<<3)                & 0x07FF);*/
 		SBUS_Flags.SBUS_Channel_16 = (SBUS_Byte[23] & 0b1000000 );		// Bit 7
-		altHoldMode=SBUS_Flags.SBUS_Channel_16;									// activate altholdMode
+
 		SBUS_Flags.SBUS_Channel_17 = (SBUS_Byte[23] & 0b01000000 );		// Bit 6
 		SBUS_lost_Frames = SBUS_lost_Frames + (SBUS_Byte[23] & 0b00100000 );
 		SBUS_Flags.Failsave_activated = (SBUS_Byte[23] & 0b00010000 );
