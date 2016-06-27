@@ -120,7 +120,7 @@ static void extRxTask(void *param)
 {
 
   //Wait for the system to be fully started
-  //systemWaitStart();
+systemWaitStart();
 
   while (true)
   {
@@ -167,7 +167,6 @@ static void extRxReceiveSBusFrame(void){
 			}
 		}
 	}
-
 }
 
 static void extRxDecodeSBusChannels(void){
@@ -198,10 +197,10 @@ static void extRxDecodeSBusChannels(void){
 		SBUS_Channel[12] = ((SBUS_Byte[17]>>4|SBUS_Byte[18]<<4)                & 0x07FF);
 		SBUS_Channel[13] = ((SBUS_Byte[18]>>7|SBUS_Byte[19]<<1|SBUS_Byte[20]<<9)  & 0x07FF);
 		SBUS_Channel[14] = ((SBUS_Byte[20]>>2|SBUS_Byte[21]<<6)                & 0x07FF);
-		SBUS_Channel[15] = ((SBUS_Byte[21]>>5|SBUS_Byte[22]<<3)                & 0x07FF);*/
+		SBUS_Channel[15] = ((SBUS_Byte[21]>>5|SBUS_Byte[22]<<3)                & 0x07FF);
 		SBUS_Flags.SBUS_Channel_16 = (SBUS_Byte[23] & 0b1000000 );		// Bit 7
 
-		SBUS_Flags.SBUS_Channel_17 = (SBUS_Byte[23] & 0b01000000 );		// Bit 6
+		SBUS_Flags.SBUS_Channel_17 = (SBUS_Byte[23] & 0b01000000 );		// Bit 6*/
 		SBUS_lost_Frames = SBUS_lost_Frames + (SBUS_Byte[23] & 0b00100000 );
 		SBUS_Flags.Failsave_activated = (SBUS_Byte[23] & 0b00010000 );
 		SBUS_Flags.Frame_valid = 1;
