@@ -201,7 +201,7 @@ static const MotorPerifDef CONN_M4_BL =
     .preloadConfig = TIM_OC4PreloadConfig,
 };
 
-// Deck TX2, PA2, TIM2_CH3
+// Motor1, Deck TX2, PA2, TIM2_CH3
 static const MotorPerifDef DECK_TX2_TIM2 =
 {
     .drvType       = BRUSHLESS,
@@ -223,7 +223,7 @@ static const MotorPerifDef DECK_TX2_TIM2 =
     .preloadConfig = TIM_OC3PreloadConfig,
 };
 
-// Deck TX2, PA2, TIM5_CH3
+// Motor1, Deck TX2, PA2, TIM5_CH3
 static const MotorPerifDef DECK_TX2_TIM5 =
 {
     .drvType       = BRUSHLESS,
@@ -245,7 +245,7 @@ static const MotorPerifDef DECK_TX2_TIM5 =
     .preloadConfig = TIM_OC3PreloadConfig,
 };
 
-// Deck RX2, PA3, TIM2_CH4
+// Motor4, Deck RX2, PA3, TIM2_CH4
 static const MotorPerifDef DECK_RX2_TIM2 =
 {
     .drvType       = BRUSHLESS,
@@ -267,7 +267,7 @@ static const MotorPerifDef DECK_RX2_TIM2 =
     .preloadConfig = TIM_OC4PreloadConfig,
 };
 
-// Deck RX2, PA3, TIM5_CH4
+// Motor4, Deck RX2, PA3, TIM5_CH4
 static const MotorPerifDef DECK_RX2_TIM5 =
 {
     .drvType       = BRUSHLESS,
@@ -289,7 +289,7 @@ static const MotorPerifDef DECK_RX2_TIM5 =
     .preloadConfig = TIM_OC4PreloadConfig,
 };
 
-// Deck IO1, PB8, TIM4_CH3
+// E_CS3, Deck IO1, PB8, TIM4_CH3
 static const MotorPerifDef DECK_IO1_TIM4 =
 {
     .drvType       = BRUSHLESS,
@@ -311,7 +311,7 @@ static const MotorPerifDef DECK_IO1_TIM4 =
     .preloadConfig = TIM_OC3PreloadConfig,
 };
 
-// Deck IO2, PB5, TIM3_CH2
+// Motor3, Deck IO2, PB5, TIM3_CH2
 static const MotorPerifDef DECK_IO2 =
 {
     .drvType       = BRUSHLESS,
@@ -333,7 +333,7 @@ static const MotorPerifDef DECK_IO2 =
     .preloadConfig = TIM_OC2PreloadConfig,
 };
 
-// Deck IO3, PB4, TIM3_CH1
+// Motor2, Deck IO3, PB4, TIM3_CH1
 static const MotorPerifDef DECK_IO3 =
 {
     .drvType       = BRUSHLESS,
@@ -399,7 +399,9 @@ static const MotorPerifDef DECK_MISO =
     .preloadConfig = TIM_OC1PreloadConfig,
 };
 
-// Deck MOSI, PA7, TIM3_CH1
+// Deck MOSI, PA7, TIM3_CH2
+//		#### can be used to output Motor4 instead of E_RX2
+//		### this enables USART capability to be used on E_RX2
 static const MotorPerifDef DECK_MOSI =
 {
     .drvType       = BRUSHLESS,
@@ -444,7 +446,8 @@ const MotorPerifDef* motorMapBigQuadDeck[NBR_OF_MOTORS] =
   &DECK_TX2_TIM2,
   &DECK_IO3,
   &DECK_IO2,
-  &DECK_RX2_TIM2
+//  &DECK_RX2_TIM2 remapped M4 to CPPM Connector to free up USART on M4
+  &DECK_MOSI
 };
 
 /**

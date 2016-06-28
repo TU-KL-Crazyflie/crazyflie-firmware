@@ -130,17 +130,19 @@ systemWaitStart();
 				extRxDecodeSBusChannels();
 				SBUS_Flags.New_Frame_received=0;
 		}
+		#elif ENABLE_CPPM
+		extRxDecodeCppm();
 		#endif
-		// extRxDecodeCppm();
+
   }
 }
 
 static void extRxReceiveSBusFrame(void){
 	char byte;
 	while(xQueueReceive(uart3queue, &byte, portMAX_DELAY)){ // read until queue empty, terminate immediately afterwards (no timeout)
-		// Prüfe Synchronisierung
+		// check for sbus sync
 		if(SBUS_Flags.SBUS_synced){
-			//Lese Frame
+			//read frame
 			if (SBUS_Byteindex<24){
 				SBUS_Byte[SBUS_Byteindex++]=byte;
 			}
@@ -150,7 +152,7 @@ static void extRxReceiveSBusFrame(void){
 				return;
 			}
 			else {
-				SBUS_Flags.SBUS_synced=0;// Synchronisierung verloren
+				SBUS_Flags.SBUS_synced=0;// SBUS sync lost
 				SBUS_lost_Frames++;
 			}
 		}
