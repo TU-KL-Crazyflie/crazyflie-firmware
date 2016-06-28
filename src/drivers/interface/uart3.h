@@ -38,19 +38,19 @@
 
 //								Hardware Definition
 
-#define USART3_TYPE            	USART1
-#define USART3_PERIF            RCC_APB2Periph_USART1
+#define USART3_TYPE            	USART2
+#define USART3_PERIF            RCC_APB2Periph_USART2
 #define ENABLE_USART3_RCC       RCC_APB2PeriphClockCmd
-#define USART3_IRQ              USART1_IRQn
+#define USART3_IRQ              USART2_IRQn
 
-#define USART3_GPIO_PERIF       RCC_AHB1Periph_GPIOB
-#define USART3_GPIO_PORT        GPIOB
-// #define USART1_GPIO_TX_PIN      GPIO_Pin_2		//Only receiver used
-#define USART3_GPIO_RX_PIN      GPIO_Pin_7
-//#define USART1_GPIO_AF_TX_PIN   GPIO_PinSource2	// Only receiver used
-#define USART3_GPIO_AF_RX_PIN   GPIO_PinSource7
-#define USART3_GPIO_AF_TX       GPIO_AF_USART1
-#define USART3_GPIO_AF_RX       GPIO_AF_USART1
+#define USART3_GPIO_PERIF       RCC_AHB1Periph_GPIOA
+#define USART3_GPIO_PORT        GPIOA
+// #define USART3_GPIO_TX_PIN      GPIO_Pin_2		//Only receiver is used for SBUS RX Communication
+#define USART3_GPIO_RX_PIN      GPIO_Pin_3
+//#define USART3_GPIO_AF_TX_PIN   GPIO_PinSource2	// Only receiver is used for SBUS RX Communication
+#define USART3_GPIO_AF_RX_PIN   GPIO_PinSource3
+#define USART3_GPIO_AF_TX       GPIO_AF_USART2
+#define USART3_GPIO_AF_RX       GPIO_AF_USART2
 
 /**
  * Initialize the UART.

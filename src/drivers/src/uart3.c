@@ -77,7 +77,7 @@ void uart3Init(const uint32_t baudrate)
   GPIO_PinAFConfig(USART3_GPIO_PORT, USART3_GPIO_AF_RX_PIN, USART3_GPIO_AF_RX);
 
   USART_InitStructure.USART_BaudRate            = baudrate;
-  USART_InitStructure.USART_Mode                = USART_Mode_Rx | USART_Mode_Tx;
+  USART_InitStructure.USART_Mode                = USART_Mode_Rx;
   USART_InitStructure.USART_WordLength          = USART_WordLength_8b;
   USART_InitStructure.USART_StopBits            = USART_StopBits_2;
   USART_InitStructure.USART_Parity              = USART_Parity_Even ;
@@ -127,7 +127,7 @@ int uart3Putchar(int ch)
 }
 
 
-void __attribute__((used)) USART1_IRQHandler(void)		//Here Hardware USART meant!!!
+void __attribute__((used)) USART2_IRQHandler(void)		//Hardware USART
 {
   uint8_t rxData;
   portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
