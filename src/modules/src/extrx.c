@@ -53,7 +53,7 @@
 #define SBUS_Channel_Min		172
 #define SBUS_mid_ch1			992
 #define SBUS_mid_ch2			992
-#define SBUS_mid_ch3			990
+#define SBUS_mid_ch3			992
 #define SBUS_Channel_Deadband	5
 
 #define EXTRX_NR_CHANNELS  		8
