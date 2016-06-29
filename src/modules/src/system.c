@@ -89,6 +89,7 @@ void systemLaunch(void)
               SYSTEM_TASK_STACKSIZE, NULL,
               SYSTEM_TASK_PRI, NULL);
 
+ // new task here
 }
 
 // This must be the first module to be initialized!

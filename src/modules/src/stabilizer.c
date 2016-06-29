@@ -93,7 +93,7 @@ static void stabilizerTask(void* param)
   vTaskSetApplicationTaskTag(0, (void*)TASK_STABILIZER_ID_NBR);
 
   //Wait for the system to be fully started to start stabilization loop
-  systemWaitStart();
+ systemWaitStart();
 
   // Wait for sensors to be calibrated
   lastWakeTime = xTaskGetTickCount ();
@@ -139,8 +139,6 @@ LOG_GROUP_STOP(acc)
 
 LOG_GROUP_START(baro)
 LOG_ADD(LOG_FLOAT, asl, &sensorData.baro.asl)
-LOG_ADD(LOG_FLOAT, temp, &sensorData.baro.temperature)
-LOG_ADD(LOG_FLOAT, pressure, &sensorData.baro.pressure)
 LOG_GROUP_STOP(baro)
 
 LOG_GROUP_START(gyro)

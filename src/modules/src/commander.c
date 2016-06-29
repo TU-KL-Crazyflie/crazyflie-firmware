@@ -74,7 +74,7 @@ static CommanderCache* activeCache;
 static uint32_t lastUpdate;
 static bool isInactive;
 static bool thrustLocked;
-static bool altHoldMode = false;
+bool altHoldMode = false;
 static bool posHoldMode = false;
 
 static RPYType stabilizationModeRoll  = ANGLE; // Current stabilization type of roll (rate or angle)
@@ -162,6 +162,7 @@ static void commanderCacheSelectorUpdate(void)
     activeCache = &crtpCache;
     commanderDropToGround();
   }
+ // activeCache = &extrxCache;
 }
 
 static void commanderCrtpCB(CRTPPacket* pk)
@@ -279,6 +280,7 @@ void commanderExtrxSet(const struct CommanderCrtpValues *val)
   if (extrxCache.targetVal[extrxCache.activeSide].thrust == 0) {
     thrustLocked = false;
   }
+
 }
 
 uint32_t commanderGetInactivityTime(void)
