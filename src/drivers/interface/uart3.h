@@ -39,8 +39,8 @@
 //								Hardware Definition
 
 #define USART3_TYPE            	USART2
-#define USART3_PERIF            RCC_APB2Periph_USART2
-#define ENABLE_USART3_RCC       RCC_APB2PeriphClockCmd
+#define USART3_PERIF            RCC_APB1Periph_USART2
+#define ENABLE_USART3_RCC       RCC_APB1PeriphClockCmd
 #define USART3_IRQ              USART2_IRQn
 
 #define USART3_GPIO_PERIF       RCC_AHB1Periph_GPIOA
