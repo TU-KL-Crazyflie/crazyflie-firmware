@@ -400,8 +400,8 @@ static const MotorPerifDef DECK_MISO =
 };
 
 // Deck MOSI, PA7, TIM14_CH1
-//		#### can be used to output Motor4 instead of E_RX2
-//		### this enables USART capability to be used on E_RX2
+//#### can be used to output Motor4 instead of E_RX2
+//### this enables USART capability to be used on E_RX2
 static const MotorPerifDef DECK_MOSI =
 {
     .drvType       = BRUSHLESS,
@@ -422,6 +422,7 @@ static const MotorPerifDef DECK_MOSI =
     .ocInit        = TIM_OC1Init,
     .preloadConfig = TIM_OC1PreloadConfig,
 };
+
 
 /**
  * Default brushed mapping to M1-M4 connectors.
@@ -447,7 +448,9 @@ const MotorPerifDef* motorMapBigQuadDeck[NBR_OF_MOTORS] =
 	&DECK_IO3,
 	&DECK_IO2,
 	&DECK_MOSI
-//  &DECK_RX2_TIM2 remapped Motor4 to CPPM Connector to free up USART on E_RX2
+
+//  Remapped Motor4 to the CPPM Connector to free up USART on E_RX2
+//  A pull-up (~1K) needs to be soldered from CPPM Signal Pin to 5V
 
 };
 
