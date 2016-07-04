@@ -54,7 +54,7 @@
 #define SBUS_mid_ch1			992
 #define SBUS_mid_ch2			992
 #define SBUS_mid_ch3			992
-#define SBUS_Channel_Deadband	5
+#define SBUS_Gas_Deadband	5
 
 #define EXTRX_NR_CHANNELS  		8
 
@@ -212,7 +212,7 @@ static void extRxDecodeSBusChannels(void){
 }
 
 static void scale_SBUS_thrust(void){
-	if(SBUS_Channel[0]<(SBUS_Channel_Min + SBUS_Channel_Deadband)){
+	if(SBUS_Channel[0]<(SBUS_Channel_Min + SBUS_Gas_Deadband)){
 		SBUS_Channel[0]=0;
 	}
 }
