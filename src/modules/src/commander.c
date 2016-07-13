@@ -78,8 +78,8 @@ static bool thrustLocked;
 bool altHoldMode = false;
 static bool posHoldMode = false;
 
-static RPYType stabilizationModeRoll  = ANGLE; // Current stabilization type of roll (rate or angle)
-static RPYType stabilizationModePitch = ANGLE; // Current stabilization type of pitch (rate or angle)
+RPYType stabilizationModeRoll  = ANGLE; // Current stabilization type of roll (rate or angle)
+RPYType stabilizationModePitch = ANGLE; // Current stabilization type of pitch (rate or angle)
 static RPYType stabilizationModeYaw   = RATE;  // Current stabilization type of yaw (rate or angle)
 
 static YawModeType yawMode = DEFAULT_YAW_MODE; // Yaw mode configuration
