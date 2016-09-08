@@ -23,8 +23,8 @@
  *
  * usart3.h - usart3 driver for deck port, on Hardware UART1
  */
-#ifndef UART3_H_
-#define UART3_H_
+#ifndef UART4_H_
+#define UART4_H_
 
 #include "crtp.h"
 #include <stdbool.h>
@@ -32,31 +32,31 @@
 
 //								Hardware Definition
 
-#define USART3_TYPE            	USART2
-#define USART3_PERIF            RCC_APB1Periph_USART2
-#define ENABLE_USART3_RCC       RCC_APB1PeriphClockCmd
-#define USART3_IRQ              USART2_IRQn
+#define USART4_TYPE            	UART4
+#define USART4_PERIF            RCC_APB1Periph_UART4
+#define ENABLE_USART4_RCC       RCC_APB1PeriphClockCmd
+#define USART4_IRQ              UART4_IRQn
 
-#define USART3_GPIO_PERIF       RCC_AHB1Periph_GPIOA
-#define USART3_GPIO_PORT        GPIOA
-// #define USART3_GPIO_TX_PIN      GPIO_Pin_2		//Only receiver is used for SBUS RX Communication
-#define USART3_GPIO_RX_PIN      GPIO_Pin_3
-//#define USART3_GPIO_AF_TX_PIN   GPIO_PinSource2	// Only receiver is used for SBUS RX Communication
-#define USART3_GPIO_AF_RX_PIN   GPIO_PinSource3
-#define USART3_GPIO_AF_TX       GPIO_AF_USART2
-#define USART3_GPIO_AF_RX       GPIO_AF_USART2
+#define USART4_GPIO_PERIF       RCC_AHB1Periph_GPIOC
+#define USART4_GPIO_PORT        GPIOC
+#define USART4_GPIO_TX_PIN      GPIO_Pin_10		//Only receiver is used for SBUS RX Communication
+#define USART4_GPIO_RX_PIN      GPIO_Pin_11
+#define USART4_GPIO_AF_TX_PIN   GPIO_PinSource10	// Only receiver is used for SBUS RX Communication
+#define USART4_GPIO_AF_RX_PIN   GPIO_PinSource11
+#define USART4_GPIO_AF_TX       GPIO_AF_UART4
+#define USART4_GPIO_AF_RX       GPIO_AF_UART4
 
 /**
  * Initialize the UART.
  */
-void uart3Init(const uint32_t baudrate);
+void uart4Init(const uint32_t baudrate);
 
 /**
  * Test the UART status.
  *
  * @return true if the UART is initialized
  */
-bool uart3Test(void);
+bool uart4Test(void);
 
 /**
  * Sends raw data using a lock. Should be used from
@@ -65,7 +65,7 @@ bool uart3Test(void);
  * @param[in] size  Number of bytes to send
  * @param[in] data  Pointer to data
  */
-void uart3SendData(uint32_t size, uint8_t* data);
+void uart4SendData(uint32_t size, uint8_t* data);
 
 /**
  * Send a single character to the serial port using the uartSendData function.
@@ -73,7 +73,7 @@ void uart3SendData(uint32_t size, uint8_t* data);
  *
  * @return Character printed
  */
-int uart3Putchar(int ch);
+int uart4Putchar(int ch);
 
 // xQueueHandle uart1queue;
 /**
@@ -83,6 +83,7 @@ int uart3Putchar(int ch);
  *
  * @note If UART Crtp link is activated this function does nothing
  */
-#define uart3Printf(FMT, ...) eprintf(uart3Putchar, FMT, ## __VA_ARGS__)
+#define uart4Printf(FMT, ...) eprintf(uart3Putchar, FMT, ## __VA_ARGS__)
 
-#endif /* UART3_H_ */
+#endif /* UART4_H_ */
+

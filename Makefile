@@ -138,7 +138,7 @@ PROJ_OBJ_CF1 += hmc5883l.o ms5611.o nrf24l01.o eeprom.o watchdog.o
 PROJ_OBJ_CF1 += eskylink.o
 PROJ_OBJ_CF2 += led_f405.o mpu6500.o i2cdev_f405.o ws2812_cf2.o lps25h.o
 PROJ_OBJ_CF2 += ak8963.o eeprom.o maxsonar.o piezo.o
-PROJ_OBJ_CF2 += uart_syslink.o swd.o uart1.o uart2.o uart3.o watchdog.o
+PROJ_OBJ_CF2 += uart_syslink.o swd.o uart1.o uart2.o uart3.o uart4.o watchdog.o
 PROJ_OBJ_CF2 += cppm.o
 # USB Files
 PROJ_OBJ_CF2 += usb_bsp.o usblink.o usbd_desc.o usb.o
@@ -155,7 +155,7 @@ PROJ_OBJ_CF2 += libdw1000.o libdw1000Spi.o
 PROJ_OBJ += system.o comm.o console.o pid.o crtpservice.o param.o mem.o
 PROJ_OBJ += log.o worker.o trigger.o sitaw.o queuemonitor.o
 PROJ_OBJ_CF1 += sound_cf1.o
-PROJ_OBJ_CF2 += platformservice.o sound_cf2.o extrx.o
+PROJ_OBJ_CF2 += platformservice.o sound_cf2.o extrx.o ubx_parser.o
 
 # Stabilizer modules
 PROJ_OBJ += commander.o attitude_pid_controller.o sensfusion6.o stabilizer.o
