@@ -34,7 +34,7 @@
 
 #include "param.h"
 
-static point_t position;
+point_t position;
 
 #define IMU_RATE RATE_500_HZ
 #define BARO_RATE RATE_100_HZ

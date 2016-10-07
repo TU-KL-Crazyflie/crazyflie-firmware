@@ -11,6 +11,7 @@
 #include "log.h"
 
 #include "ubx_parser.h"
+#include "stabilizer_types.h"
 
 #define	UBX_SYNC1_CHAR	0xB5
 #define	UBX_SYNC2_CHAR	0x62
@@ -34,31 +35,23 @@
 // ublox message id
 #define	UBX_ID_RELPOSNED	0x3C
 
-typedef struct {
 
-	uint8_t			NA;		//
-	int8_t			NA2;		//
-	int16_t			NA3;		//
-	uint32_t		NA4;		//
-	int32_t			relPosN;		// North component of relative position vector cm
-	int32_t			relPosE;		// East component of relative position vector cm
-	int32_t			relPosD;		// Down component of relative position vector cm
-	int8_t			NA5;
-	int8_t			NA6;
-	int8_t			NA7;
-	uint8_t			NA8;
-	uint32_t		NA9;
-	uint32_t		NA10;
-	uint32_t		NA11;
-	uint32_t		Flags;
-	Status_t		Status;
-} UBX_RELPOSNED_t;
 
 extern  xQueueHandle uart4queue;
 static void ubx_parserTask(void *param);
 
 UBX_RELPOSNED_t		UbxRELPOSNED	  = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,INVALID};
+extern point_t position;
 
+static void UpdateGPSData(){
+	if (UbxRELPOSNED.Status == NEWDATA) {
+		position.x = (float) UbxRELPOSNED.relPosN / 100.0f;
+		position.y = (float) UbxRELPOSNED.relPosE / 100.0f;
+		position.z = (float) UbxRELPOSNED.relPosD / 100.0f;
+		position.timestamp=xTaskGetTickCount();
+		UbxRELPOSNED.Status = PROCESSED;
+	}
+}
 
 
 void ubxpaserInit(void)
@@ -159,7 +152,7 @@ static void ubx_parserTask(void *param)
 			case UBXSTATE_CKB:
 				if (c == ckb) {
 					*ubxSp = NEWDATA; // new data are valid
-					//UpdateGPSInfo(); //update GPS info respectively debug
+					UpdateGPSData(); //update GPS Date
 					//GPSTimeout = 255;	debug
 				} else {	// if checksum not fit then set data invalid
 					*ubxSp = INVALID;

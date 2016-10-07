@@ -80,6 +80,7 @@ static uint16_t	SBUS_Channel[16];
 
 extern  xQueueHandle uart3queue;  // Introduce queueHandler from uart3.c
 extern 	bool altHoldMode;
+extern bool posHoldMode;
 extern bool stabilizationModeRoll;
 extern bool stabilizationModePitch;
 
@@ -192,9 +193,10 @@ static void extRxDecodeSBusChannels(void){
 		SBUS_Channel[4]  = ((SBUS_Byte[6]>>4 |SBUS_Byte[7]<<4)                 & 0x07FF);
 		altHoldMode = SBUS_Channel[4] & (1<<10);									// activate altholdMode
 		SBUS_Channel[5]  = ((SBUS_Byte[7]>>7 |SBUS_Byte[8]<<1 |SBUS_Byte[9]<<9)   & 0x07FF);
-		stabilizationModeRoll = SBUS_Channel[5] & (1<<10);
+		stabilizationModeRoll = SBUS_Channel[5] & (1<<10);			// set stabilizationModeRoll=1 (activate) if chan>511
 		stabilizationModePitch = stabilizationModeRoll;
-		/* SBUS_Channel[6]  = ((SBUS_Byte[9]>>2 |SBUS_Byte[10]<<6)                & 0x07FF);
+		SBUS_Channel[6]  = ((SBUS_Byte[9]>>2 |SBUS_Byte[10]<<6)                & 0x07FF);
+		posHoldMode = SBUS_Channel[4] & (1<<10);					// toggle posHoldMode
 		SBUS_Channel[7]  = ((SBUS_Byte[10]>>5|SBUS_Byte[11]<<3)                & 0x07FF);
 		SBUS_Channel[8]  = ((SBUS_Byte[12]   |SBUS_Byte[13]<<8)                & 0x07FF);
 		SBUS_Channel[9]  = ((SBUS_Byte[13]>>3|SBUS_Byte[14]<<5)                & 0x07FF);

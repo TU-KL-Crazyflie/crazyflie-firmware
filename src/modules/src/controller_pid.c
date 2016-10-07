@@ -8,6 +8,7 @@
 
 #include "log.h"
 #include "param.h"
+#include "ubx_parser.h"
 
 #define ATTITUDE_RATE RATE_500_HZ
 #define POSITION_RATE RATE_100_HZ
@@ -17,6 +18,7 @@ static bool tiltCompensationEnabled = true;
 static attitude_t attitudeDesired;
 static attitude_t rateDesired;
 static float actuatorThrust;
+UBX_RELPOSNED_t		UbxRELPOSNED;
 
 void stateControllerInit(void)
 {
@@ -50,7 +52,7 @@ void stateController(control_t *control, const sensorData_t *sensors,
     }
   }
 
-  if (RATE_DO_EXECUTE(POSITION_RATE, tick)) {
+  if (RATE_DO_EXECUTE(POSITION_RATE, tick) && UbxRELPOSNED.Status == PROCESSED) {
     positionController(&actuatorThrust, &attitudeDesired, state, setpoint);
   }
 

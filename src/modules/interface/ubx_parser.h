@@ -34,3 +34,23 @@ typedef enum
 	NEWDATA,
 	PROCESSED
 } Status_t;
+
+typedef struct {
+
+	uint8_t			NA;		//
+	int8_t			NA2;		//
+	int16_t			NA3;		//
+	uint32_t		NA4;		//
+	int32_t			relPosN;		// North component of relative position vector cm
+	int32_t			relPosE;		// East component of relative position vector cm
+	int32_t			relPosD;		// Down component of relative position vector cm
+	int8_t			NA5;
+	int8_t			NA6;
+	int8_t			NA7;
+	uint8_t			NA8;
+	uint32_t		NA9;
+	uint32_t		NA10;
+	uint32_t		NA11;
+	uint32_t		Flags;
+	Status_t		Status;
+} UBX_RELPOSNED_t;
