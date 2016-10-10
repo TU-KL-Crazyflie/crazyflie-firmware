@@ -76,7 +76,7 @@ static uint32_t lastUpdate;
 static bool isInactive;
 static bool thrustLocked;
 bool altHoldMode = false;
-static bool posHoldMode = false;
+bool posHoldMode = false;
 
 RPYType stabilizationModeRoll  = ANGLE; // Current stabilization type of roll (rate or angle)
 RPYType stabilizationModePitch = ANGLE; // Current stabilization type of pitch (rate or angle)

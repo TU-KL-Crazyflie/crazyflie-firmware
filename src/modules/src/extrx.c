@@ -197,6 +197,7 @@ static void extRxDecodeSBusChannels(void){
 		stabilizationModePitch = stabilizationModeRoll;
 		SBUS_Channel[6]  = ((SBUS_Byte[9]>>2 |SBUS_Byte[10]<<6)                & 0x07FF);
 		posHoldMode = SBUS_Channel[4] & (1<<10);					// toggle posHoldMode
+		/*
 		SBUS_Channel[7]  = ((SBUS_Byte[10]>>5|SBUS_Byte[11]<<3)                & 0x07FF);
 		SBUS_Channel[8]  = ((SBUS_Byte[12]   |SBUS_Byte[13]<<8)                & 0x07FF);
 		SBUS_Channel[9]  = ((SBUS_Byte[13]>>3|SBUS_Byte[14]<<5)                & 0x07FF);
@@ -207,8 +208,8 @@ static void extRxDecodeSBusChannels(void){
 		SBUS_Channel[14] = ((SBUS_Byte[20]>>2|SBUS_Byte[21]<<6)                & 0x07FF);
 		SBUS_Channel[15] = ((SBUS_Byte[21]>>5|SBUS_Byte[22]<<3)                & 0x07FF);
 		SBUS_Flags.SBUS_Channel_16 = (SBUS_Byte[23] & 0b1000000 );		// Bit 7
-
 		SBUS_Flags.SBUS_Channel_17 = (SBUS_Byte[23] & 0b01000000 );		// Bit 6*/
+
 		SBUS_lost_Frames = SBUS_lost_Frames + (SBUS_Byte[23] & 0b00100000 );
 		SBUS_Flags.Failsave_activated = (SBUS_Byte[23] & 0b00010000 );
 		SBUS_Flags.Frame_valid = 1;

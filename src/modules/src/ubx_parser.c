@@ -39,6 +39,7 @@
 
 extern  xQueueHandle uart4queue;
 static void ubx_parserTask(void *param);
+static uint8_t Fix_Status;
 
 UBX_RELPOSNED_t		UbxRELPOSNED	  = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,INVALID};
 extern point_t position;
@@ -48,6 +49,7 @@ static void UpdateGPSData(){
 		position.x = (float) UbxRELPOSNED.relPosN / 100.0f;
 		position.y = (float) UbxRELPOSNED.relPosE / 100.0f;
 		position.z = (float) UbxRELPOSNED.relPosD / 100.0f;
+		Fix_Status = (UbxRELPOSNED.Flags>>3);
 		position.timestamp=xTaskGetTickCount();
 		UbxRELPOSNED.Status = PROCESSED;
 	}
@@ -173,6 +175,6 @@ LOG_GROUP_START(UBX_GPS)
 LOG_ADD(LOG_INT32, RelPosN, &UbxRELPOSNED.relPosN)
 LOG_ADD(LOG_INT32, RelPosE, &UbxRELPOSNED.relPosE)
 LOG_ADD(LOG_INT32, RelPosD, &UbxRELPOSNED.relPosD)
-LOG_ADD(LOG_UINT8, Status_INV_NEW_PAR, &UbxRELPOSNED.Status)
+LOG_ADD(LOG_UINT8, CarrierSolution, &Fix_Status)
 LOG_GROUP_STOP(UBX_GPS)
 
